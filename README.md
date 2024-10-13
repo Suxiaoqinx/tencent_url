@@ -30,6 +30,6 @@ music_urls[] = 包含'm4a', '128', '320', 'flac', 'ape'等歌曲链接
 
 # 注意事项
 请先在app.py中的cookie_str填写入你从y.qq.com获取到的cookie才可以解析！
-
+其中 要解析VIP歌曲以及无损以上音质 请获取会员账号的cookie
 # 反馈方法
 请在Github的lssues反馈 或者到我[博客](https://www.toubiec.cn)反馈
