@@ -1,4 +1,12 @@
 <?php
+/**
+ * 作者:苏晓晴
+ * 作者QQ:3074193836
+ * 免费脚本 请勿收费~
+ * 个人博客 www.toubiec.cn
+ * 源码项目地址：https://github.com/Suxiaoqinx/tencent_url
+ */
+
 // 允许所有域的跨域请求
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
@@ -86,7 +94,6 @@ class QQMusic {
 
         $file_info = $this->file_config[$file_type];
         $file = "{$file_info['s']}{$songmid}{$songmid}{$file_info['e']}";
-        //exit($file);
         $req_data = [
             'req_1' => [
                 'module' => 'vkey.GetVkeyServer',
@@ -216,8 +223,7 @@ class QQMusic {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $song_url = $_GET['url'] ?? null;
-    //$level = [$_GET['level']] ?? null;
+    $song_url = 'https://y.qq.com/n/ryqq/songDetail/004YZbkL2MNHoY';
     if (!$song_url) {
         echo json_encode(["error" => "url & level parameter is required"]);
         http_response_code(400);
@@ -244,7 +250,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         //$music_url = $qqmusic->getMusicUrl($music_info['mid'],$level);
         $music_lyric = $qqmusic->getMusicLyricNew($music_info['id']);
         // 文件类型处理
-        $file_types = ['aac_48','aac_96','aac_192','ogg_96','ogg_192','ogg_320','ogg_640','atmos_51','atmos_2','master','flac','320','128'];;
+        $file_types = ['aac_48','aac_96','aac_192','ogg_96','ogg_192','ogg_320','ogg_640','atmos_51','atmos_2','master','flac','320','128'];
         $results = [];  // 用于存储不同文件类型的结果
 
         foreach ($file_types as $file_type) {
