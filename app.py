@@ -25,12 +25,29 @@ class QQMusic:
             'Referer': 'https://y.qq.com/',
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
         }
+        self.mac_headers = {
+            "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
+            "referer": "https://i.y.qq.com",
+            "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "Host": "u.y.qq.com",
+            "Connection": "Keep-Alive"
+        }
         self.file_config = {
-            'm4a': {'s': 'C400', 'e': '.m4a', 'bitrate': 'M4A'},
             '128': {'s': 'M500', 'e': '.mp3', 'bitrate': '128kbps'},
             '320': {'s': 'M800', 'e': '.mp3', 'bitrate': '320kbps'},
             'flac': {'s': 'F000', 'e': '.flac', 'bitrate': 'FLAC'},
-            'ape': {'s': 'A000', 'e': '.ape', 'bitrate': 'ape'},
+            'master': {'s': 'AI00', 'e': '.flac', 'bitrate': 'Master'},
+            'atmos_2': {'s': 'Q000', 'e': '.flac', 'bitrate': 'Atmos 2'},
+            'atmos_51': {'s': 'Q001', 'e': '.flac', 'bitrate': 'Atmos 5.1'},
+            'ogg_640': {'s': 'O801', 'e': '.ogg', 'bitrate': '640kbps'},
+            'ogg_320': {'s': 'O800', 'e': '.ogg', 'bitrate': '320kbps'},
+            'ogg_192': {'s': 'O600', 'e': '.ogg', 'bitrate': '192kbps'},
+            'ogg_96': {'s': 'O400', 'e': '.ogg', 'bitrate': '96kbps'},
+            'aac_192': {'s': 'C600', 'e': '.m4a', 'bitrate': '192kbps'},
+            'aac_96': {'s': 'C400', 'e': '.m4a', 'bitrate': '96kbps'},
+            'aac_48': {'s': 'C200', 'e': '.m4a', 'bitrate': '48kbps'}
         }
         self.song_url = 'https://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg'
         self.lyric_url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg'
@@ -73,7 +90,7 @@ class QQMusic:
         获取音乐播放URL
         """
         if file_type not in self.file_config:
-            raise ValueError("Invalid file_type. Choose from 'm4a', '128', '320', 'flac', 'ape'")
+            raise ValueError("Invalid file_type. Choose from 'm4a', '128', '320', 'flac', 'ape', 'dts")
 
         file_info = self.file_config[file_type]
         file = f"{file_info['s']}{songmid}{songmid}{file_info['e']}"
@@ -203,7 +220,7 @@ class QQMusic:
 
             其中 lyric为原文歌词 trans为翻译歌词
         """
-        url = "https://u.y.qq.com/cgi-bin/musicu.fcg"
+        #url = "https://u.y.qq.com/cgi-bin/musicu.fcg"
         payload = {
             "music.musichallSong.PlayLyricInfo.GetPlayLyricInfo": {
                 "module": "music.musichallSong.PlayLyricInfo",
@@ -251,7 +268,7 @@ class QQMusic:
 
         # 发送请求获取歌词
         try:
-            res = requests.post(url, json=payload)  # 确保使用 POST 请求
+            res = requests.post(self.base_url, json=payload, cookies=self.cookies, headers=self.headers)  # 确保使用 POST 请求
             res.raise_for_status()  # 检查请求是否成功
             d = res.json()  # 解析返回的 JSON 数据
             
@@ -284,7 +301,7 @@ def get_song():
     songmid = qqmusic.ids(song_url)
 
     # 文件类型处理
-    file_types = ['flac', 'm4a', '128', '320', 'ape']
+    file_types = ['aac_48','aac_96','aac_192','ogg_96','ogg_192','ogg_320','ogg_640','atmos_51','atmos_2','master','flac','320','128']
     results = {}
 
     try:
@@ -295,10 +312,8 @@ def get_song():
         # 否则视为 songmid (mid)
         sid = 0
         mid = songmid
-    #return qqmusic.get_music_song(mid, sid)
     # 获取歌曲信息
     info = qqmusic.get_music_song(mid, sid)
-
     # 对于每种文件类型，获取对应的音乐 URL
     for file_type in file_types:
         result = qqmusic.get_music_url(info['mid'], file_type)
